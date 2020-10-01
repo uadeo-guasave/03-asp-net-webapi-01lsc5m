@@ -18,6 +18,9 @@ namespace myapi.Controllers
       _db = db;
     }
 
+    public bool UserExists(int id) =>
+      _db.Users.Any(u => u.Id == id);
+
     // select * from users;
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetAll()
@@ -34,6 +37,59 @@ namespace myapi.Controllers
       {
         return NotFound();
       }
+      return user;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<User>> CreateNew(User newUser)
+    {
+      _db.Users.Add(newUser);
+      await _db.SaveChangesAsync();
+
+      return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> SaveChanges(int id, User modifiedUser)
+    {
+      if (id != modifiedUser.Id)
+      {
+        return BadRequest();
+      }
+
+      _db.Entry(modifiedUser).State = EntityState.Modified;
+
+      try
+      {
+        await _db.SaveChangesAsync();
+      }
+      catch (DbUpdateConcurrencyException)
+      {
+        if (!UserExists(id))
+        {
+          return NotFound();
+        }
+        else
+        {
+          throw;
+        }
+      }
+
+      return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<User>> Delete(int id)
+    {
+      var user = await _db.Users.FindAsync(id);
+      if (user == null)
+      {
+        return NotFound();
+      }
+
+      _db.Users.Remove(user);
+      await _db.SaveChangesAsync();
+
       return user;
     }
   }

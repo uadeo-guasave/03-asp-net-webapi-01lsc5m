@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace myapi.Models
@@ -24,6 +25,12 @@ namespace myapi.Models
 
         user.HasIndex(u => u.Email).IsUnique();
         user.HasIndex(u => u.Name).IsUnique();
+
+        // user.Property(u => u.Gender)
+        //   .HasConversion(
+        //     v => v.ToString(),
+        //     v => (gender)Enum.Parse(typeof(gender), v)
+        //   );
       });
       base.OnModelCreating(modelBuilder);
     }

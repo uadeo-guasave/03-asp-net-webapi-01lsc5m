@@ -12,7 +12,7 @@ namespace myapi.Models
         [Required, MaxLength(200)]
         public string Email { get; set; }
         [Required, MaxLength(6)]
-        public gender Gender { get; set; }
+        public string Gender { get; set; }
         [Required, MaxLength(20)]
         public string Name { get; set; }
         [Required, MaxLength(12)]
@@ -21,6 +21,6 @@ namespace myapi.Models
 
     public enum gender
     {
-        MALE, FEMALE
+        Male, Female
     }
 }
