@@ -92,5 +92,11 @@ namespace myapi.Controllers
 
       return user;
     }
+
+    [HttpPost]
+    public async Task<ActionResult<User>> Login(User user, string token)
+    {
+      // TODO: Definir la consulta a la tabla users para validar el login
+    }
   }
 }
