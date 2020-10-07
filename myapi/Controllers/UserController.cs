@@ -94,9 +94,18 @@ namespace myapi.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> Login(User user, string token)
+    [Route("/api/login")]
+    public async Task<ActionResult<User>> Login([FromForm] string name, [FromForm] string password)
     {
+      System.Console.WriteLine($"name={name} password={password}");
       // TODO: Definir la consulta a la tabla users para validar el login
+      var user = await _db.Users.FirstOrDefaultAsync(u => u.Name == name && u.Password == password);
+      if (user == null)
+      {
+        return NotFound();
+      }
+      
+      return user;
     }
   }
 }
