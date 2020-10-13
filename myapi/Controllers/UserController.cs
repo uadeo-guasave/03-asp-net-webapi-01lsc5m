@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using myapi.Models;
 
@@ -30,18 +31,19 @@ namespace myapi.Controllers
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetById(int id)
+    public async Task<ActionResult<User>> GetById([FromRoute] int id, [BindRequired, FromQuery] string otro)
     {
       var user = await _db.Users.FindAsync(id);
       if (user == null)
       {
         return NotFound();
       }
+      System.Console.WriteLine("otro={0}", otro);
       return user;
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> CreateNew(User newUser)
+    public async Task<ActionResult<User>> CreateNew([FromBody] User newUser)
     {
       _db.Users.Add(newUser);
       await _db.SaveChangesAsync();
@@ -50,7 +52,7 @@ namespace myapi.Controllers
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> SaveChanges(int id, User modifiedUser)
+    public async Task<IActionResult> SaveChanges([FromRoute] int id, [FromBody] User modifiedUser)
     {
       if (id != modifiedUser.Id)
       {
@@ -79,7 +81,7 @@ namespace myapi.Controllers
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<User>> Delete(int id)
+    public async Task<ActionResult<User>> Delete([FromBody] int id)
     {
       var user = await _db.Users.FindAsync(id);
       if (user == null)
