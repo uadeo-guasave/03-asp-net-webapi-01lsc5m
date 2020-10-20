@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using myapi.Helpers;
 
 namespace myapi.Models
@@ -45,46 +46,51 @@ namespace myapi.Models
       // 4. Al menos debe tener una letra minúscula*
       // 5. No puede tener espacios
       // Ej: 1234-Fgrt
-      var validacion = new {
-        numero = 0,
-        simbolo = 0,
-        minuscula = 0,
-        mayuscula = 0,
-        espacio = 0
-      };
-      foreach (var c in Password)
+      // Map -> Select
+      // Reduce -> Aggregate
+      // Filter -> Where
+      // NivelDeFortaleza ["Muy débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"]
+      int puntajeDeContraseña = 0;
+      if (Password.Any(c => char.IsDigit(c)))
       {
-        // como saber si es número?
-        if (char.IsDigit(c))
-        {
-          validacion.numero++;
-        }
-
-        if (char.IsLetter(c) && char.IsUpper(c))
-        {
-          validacion.mayuscula++;
-        }
-
-        if (char.IsLetter(c) && char.IsLower(c))
-        {
-          validacion.minuscula++;
-        }
-
-        if (!char.IsLetterOrDigit(c))
-        {
-          validacion.simbolo++;
-        }
+        puntajeDeContraseña++;
+      }
+      if (Password.Any(c => char.IsSymbol(c)))
+      {
+        puntajeDeContraseña++;
+      }
+      if (Password.Any(c => char.IsUpper(c)))
+      {
+        puntajeDeContraseña++;
+      }
+      if (Password.Any(c => char.IsLower(c)))
+      {
+        puntajeDeContraseña++;
+      }
+      if (!Password.Any(c => char.IsWhiteSpace(c)))
+      {
+        puntajeDeContraseña++;
       }
 
-      throw new System.NotImplementedException();
+      if (puntajeDeContraseña < 4)
+      {
+        yield return new ValidationResult($"La contraseña es {(NivelDeFortaleza)puntajeDeContraseña} agrega mayúsculas, minúsculas, números, símbolos, sin espacios.", new string[] { nameof(Password) });
+      }
     }
-
-    // [NotMapped]
-    // public string AnotherPassword { get; set; }
   }
 
   public enum gender
   {
     Male, Female
+  }
+
+  public enum NivelDeFortaleza
+  {
+    JODIDO = 0,
+    MUY_DÉBIL = 1,
+    DÉBIL = 2,
+    REGULAR = 3,
+    FUERTE = 4,
+    MUY_FUERTE = 5
   }
 }

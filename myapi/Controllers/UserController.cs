@@ -31,20 +31,21 @@ namespace myapi.Controllers
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetById([FromRoute] int id, [BindRequired, FromQuery] string otro)
+    public async Task<ActionResult<User>> GetById([FromRoute] int id)
     {
       var user = await _db.Users.FindAsync(id);
       if (user == null)
       {
         return NotFound();
       }
-      System.Console.WriteLine("otro={0}", otro);
       return user;
     }
 
     [HttpPost]
     public async Task<ActionResult<User>> CreateNew([FromBody] User newUser)
     {
+      TryValidateModel(newUser);
+
       _db.Users.Add(newUser);
       await _db.SaveChangesAsync();
 
@@ -81,7 +82,7 @@ namespace myapi.Controllers
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<User>> Delete([FromBody] int id)
+    public async Task<ActionResult<User>> Delete([FromRoute] int id)
     {
       var user = await _db.Users.FindAsync(id);
       if (user == null)
