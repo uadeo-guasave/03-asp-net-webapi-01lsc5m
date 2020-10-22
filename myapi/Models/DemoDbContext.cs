@@ -13,6 +13,7 @@ namespace myapi.Models
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+      // FLUENT API
       modelBuilder.Entity<User>(user =>
       {
         user.Property(u => u.Id).HasColumnName("id");
@@ -36,6 +37,7 @@ namespace myapi.Models
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Author> Authors { get; set; }
 
   }
 }

@@ -39,6 +39,16 @@ namespace myapi.Models
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
       // add logic
+      int puntajeDeContraseña = FortalezaDeContraseña();
+
+      if (puntajeDeContraseña < 4)
+      {
+        yield return new ValidationResult($"La contraseña es {(NivelDeFortaleza)puntajeDeContraseña} agrega mayúsculas, minúsculas, números, símbolos, sin espacios.", new string[] { nameof(Password) });
+      }
+    }
+
+    private int FortalezaDeContraseña()
+    {
       // Fortaleza de la contraseña
       // 1. Al menos un número*
       // 2. Al menos un símbolo (no alfanuméricos)*
@@ -52,30 +62,21 @@ namespace myapi.Models
       // NivelDeFortaleza ["Muy débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"]
       int puntajeDeContraseña = 0;
       if (Password.Any(c => char.IsDigit(c)))
-      {
         puntajeDeContraseña++;
-      }
+        
       if (Password.Any(c => char.IsSymbol(c)))
-      {
         puntajeDeContraseña++;
-      }
+        
       if (Password.Any(c => char.IsUpper(c)))
-      {
         puntajeDeContraseña++;
-      }
+        
       if (Password.Any(c => char.IsLower(c)))
-      {
         puntajeDeContraseña++;
-      }
+        
       if (!Password.Any(c => char.IsWhiteSpace(c)))
-      {
         puntajeDeContraseña++;
-      }
 
-      if (puntajeDeContraseña < 4)
-      {
-        yield return new ValidationResult($"La contraseña es {(NivelDeFortaleza)puntajeDeContraseña} agrega mayúsculas, minúsculas, números, símbolos, sin espacios.", new string[] { nameof(Password) });
-      }
+      return puntajeDeContraseña;
     }
   }
 
