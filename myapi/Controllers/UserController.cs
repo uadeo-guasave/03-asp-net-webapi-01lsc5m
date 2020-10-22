@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,11 +47,22 @@ namespace myapi.Controllers
     {
       TryValidateModel(newUser);
 
+      if (NameExists(newUser.Name) || EmailExists(newUser.Email))
+      {
+        return UnprocessableEntity("El nombre de usuario o email no estan disponibles.");
+      }
+
       _db.Users.Add(newUser);
       await _db.SaveChangesAsync();
 
       return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
     }
+
+    private bool EmailExists(string email) =>
+      _db.Users.Any(u => u.Email == email);
+
+    private bool NameExists(string name) =>
+      _db.Users.Any(u => u.Name == name);
 
     [HttpPut("{id}")]
     public async Task<IActionResult> SaveChanges([FromRoute] int id, [FromBody] User modifiedUser)
